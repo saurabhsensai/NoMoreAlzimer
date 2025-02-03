@@ -9,7 +9,9 @@ def init_db():
     # Create table (same as before)
     c.execute('''
         CREATE TABLE IF NOT EXISTS patients (
-            PTID TEXT PRIMARY KEY,
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            PTID TEXT NOT NULL,
+            VISCODE TEXT NOT NULL,
             NAME TEXT,
             C2N_plasma_ptau217_ratio REAL,
             C2N_plasma_Abeta42 REAL,
@@ -72,7 +74,7 @@ def delete_patient(ptid):
     
     try:
         print(f"[DEBUG] Attempting to delete PTID: {ptid}")  # Debugging line
-        c.execute("DELETE FROM patients WHERE PTID = ?", (ptid,))
+        c.execute("DELETE FROM patients WHERE ID = ?", (ptid,))
         conn.commit()
         success = c.rowcount > 0
         print(f"[DEBUG] Deletion successful: {success}")  # Debugging line

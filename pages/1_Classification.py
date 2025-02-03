@@ -3,21 +3,35 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-import matplotlib 
 from utils import apply_custom_css, make_classification_prediction
+
 # Apply custom CSS
 apply_custom_css()
 
 st.title("🔍 Classification Analysis")
 st.markdown("""
     This page analyzes various biomarkers and clinical data to provide classification predictions.
-    Please input the required parameters below.
+    Please input the required parameters below or upload a CSV file.
 """)
 
-# Create two columns for better layout
+# Define required columns for CSV upload
+REQUIRED_COLUMNS = [
+    'C2N_plasma_ptau217_ratio', 'C2N_plasma_Abeta42', 'C2N_plasma_Abeta42_Abeta40',
+    'C2N_plasma_ptau217', 'Roche_plasma_GFAP', 'C2N_plasma_nptau217', 'Roche_plasma_NfL',
+    'AGE', 'MMSE', 'ADAS11', 'ADAS13', 'FAQ', 'APOE4', 'PTETHCAT', 'PTGENDER'
+]
+
+# File uploader section
+uploaded_file = st.file_uploader("Upload CSV file (optional)", type=["csv"])
+
+# Create two columns for layout
 col1, col2 = st.columns(2)
 
-# Input form
+# Initialize session state for batch results
+if 'batch_results' not in st.session_state:
+    st.session_state.batch_results = None
+
+# Input form for manual entry
 with st.form("classification_form"):
     st.subheader("📋 Input Parameters")
     
@@ -44,27 +58,61 @@ with st.form("classification_form"):
 
     submit_button = st.form_submit_button("Generate Classification")
 
-# Handle prediction when form is submitted
+# Handle predictions
 if submit_button:
-    input_data = {
-        'C2N_plasma_ptau217_ratio': c2n_plasma_ptau217_ratio,
-        'C2N_plasma_Abeta42': c2n_plasma_abeta42,
-        'C2N_plasma_Abeta42_Abeta40': c2n_plasma_abeta42_abeta40,
-        'C2N_plasma_ptau217': c2n_plasma_ptau217,
-        'Roche_plasma_GFAP': roche_plasma_gfap,
-        'C2N_plasma_nptau217': c2n_plasma_nptau217,
-        'Roche_plasma_NfL': roche_plasma_nfl,
-        'AGE': age,
-        'MMSE': mmse,
-        'ADAS11': adas11,
-        'ADAS13': adas13,
-        'FAQ': faq,
-        'APOE4': apoe4,
-        'PTETHCAT': ptethcat,
-        'PTGENDER': ptgender
-    }
+    if uploaded_file is not None:
+        # Process CSV file
+        try:
+            df = pd.read_csv(uploaded_file)
+            
+            # Validate CSV structure
+            missing_cols = [col for col in REQUIRED_COLUMNS if col not in df.columns]
+            if missing_cols:
+                st.error(f"Missing columns in CSV: {', '.join(missing_cols)}")
+            else:
+                predictions = []
+                for _, row in df.iterrows():
+                    input_data = {col: row[col] for col in REQUIRED_COLUMNS}
+                    prediction = make_classification_prediction(input_data)
+                    
+                    if prediction is not None:
+                        class_names = ['CN', 'MCI', 'AD']
+                        max_prob_idx = np.argmax(prediction)
+                        predictions.append({
+                            'Prediction': class_names[max_prob_idx],
+                            'Confidence': f"{prediction[max_prob_idx]:.1%}",
+                            **{f"{cls} Probability": f"{prob:.1%}" for cls, prob in zip(class_names, prediction)},
+                            **input_data
+                        })
+                
+                if predictions:
+                    st.session_state.batch_results = pd.DataFrame(predictions)
+                    st.success(f"Successfully processed {len(predictions)} records!")
+                    
+        except Exception as e:
+            st.error(f"Error processing CSV file: {str(e)}")
     
-    prediction = make_classification_prediction(input_data)
+    else:
+        # Process manual input
+        input_data = {
+            'C2N_plasma_ptau217_ratio': c2n_plasma_ptau217_ratio,
+            'C2N_plasma_Abeta42': c2n_plasma_abeta42,
+            'C2N_plasma_Abeta42_Abeta40': c2n_plasma_abeta42_abeta40,
+            'C2N_plasma_ptau217': c2n_plasma_ptau217,
+            'Roche_plasma_GFAP': roche_plasma_gfap,
+            'C2N_plasma_nptau217': c2n_plasma_nptau217,
+            'Roche_plasma_NfL': roche_plasma_nfl,
+            'AGE': age,
+            'MMSE': mmse,
+            'ADAS11': adas11,
+            'ADAS13': adas13,
+            'FAQ': faq,
+            'APOE4': apoe4,
+            'PTETHCAT': ptethcat,
+            'PTGENDER': ptgender
+        }
+        
+        prediction = make_classification_prediction(input_data)
     
     if prediction is not None:
         st.markdown("### 🎯 Classification Results")

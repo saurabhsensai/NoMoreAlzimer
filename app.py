@@ -38,7 +38,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🧬 Biomarker Analysis Platform")
+st.title("🧬 No More Alzheimers Disease")
 
 # Create tabs for different sections
 tab1, tab2 = st.tabs(["📝 Data Entry", "📊 View Records"])
@@ -56,6 +56,7 @@ with tab1:
             st.subheader("Patient Information")
             ptid = st.text_input("Patient ID*", key="ptid")
             name = st.text_input("Patient Name*", key="name")
+            viscode = st.selectbox("Visiting Code*", ['bl', 'm06', 'm12', 'm18', 'm24', 'm30' , 'm36' , 'm42'], key="viscode")
             age = st.number_input("Age", min_value=0, max_value=120, key="age")
             ptgender = st.selectbox("Gender", ['Female', 'Male'], key="ptgender")
             ptethcat = st.selectbox("Ethnicity Category", 
@@ -99,6 +100,7 @@ with tab1:
                 data = {
                     'PTID': ptid,
                     'NAME': name,
+                    'VISCODE': viscode,
                     'C2N_plasma_ptau217_ratio': c2n_plasma_ptau217_ratio,
                     'C2N_plasma_Abeta42': c2n_plasma_abeta42,
                     'C2N_plasma_Abeta42_Abeta40': c2n_plasma_abeta42_abeta40,
@@ -164,7 +166,7 @@ with tab2:
     
     # Delete selected records
     if st.button("🗑️ Delete Selected Records"):
-        selected_ptids = edited_df[edited_df['Select']]['PTID'].tolist()
+        selected_ptids = edited_df[edited_df['Select']]['ID'].tolist()
         
         if not selected_ptids:
             st.warning("No records selected!")
