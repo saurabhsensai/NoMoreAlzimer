@@ -2,9 +2,15 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from progression_pytorch import LongitudinalModel, preprocess_inference_data, process_data
 import joblib
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+
+device = 'cpu'
 
 def apply_custom_css():
     st.markdown("""
@@ -115,6 +121,30 @@ def add_extra_column(df):
     return df
 
 
+def do_preprocessing(X_test_lon_ex , X_test_dem_ex):
+    X_test_lon_ex = torch.FloatTensor(X_test_lon_ex)
+    X_test_dem_ex = torch.FloatTensor(X_test_dem_ex)
+
+    return X_test_lon_ex , X_test_dem_ex
+
+
+def predict_single(loaded_model, lon_data, dem_data):
+    # Convert to tensor
+    lon_tensor = torch.FloatTensor(lon_data).unsqueeze(0)  # Add batch dim
+    dem_tensor = torch.FloatTensor(dem_data).unsqueeze(0)
+    
+    # Move to device
+    lon_tensor = lon_tensor.to(device)
+    dem_tensor = dem_tensor.to(device)
+    
+    # Inference
+    loaded_model.eval()
+    with torch.no_grad():
+        output = loaded_model(lon_tensor, dem_tensor)
+        prob = F.softmax(output, dim=1)
+    
+    return prob.cpu().numpy().squeeze()
+
 def get_progression_results(df):
 
     try:
@@ -126,10 +156,25 @@ def get_progression_results(df):
     means = scaler.mean_
     stds = scaler.scale_
 
-    le = LabelEncoder()
 
     time_steps = 2 
-    X_test_lon_ex , X_test_dem_ex, y_test_ex = process_data(df, means, stds, scaler,  time_steps)
-    y_test_ex = le.fit_transform(y_test_ex)
+    X_test_lon_ex , X_test_dem_ex = process_data(df, means, stds, scaler,  time_steps)
 
-    return 24
+
+    X_test_lon_ex , X_test_dem_ex = do_preprocessing(X_test_lon_ex , X_test_dem_ex)
+
+    loaded_model = LongitudinalModel(
+    num_features=14, 
+    dem_features=4,
+    num_classes=3,
+    time_steps=2
+    )
+    
+    loaded_model.load_state_dict(torch.load("progression_model/pytorch_progression.pth"))
+    loaded_model.to(device)
+
+    sample_lon = X_test_lon_ex[0].cpu() 
+    sample_dem = X_test_dem_ex[0].cpu()
+    probabilities = predict_single(loaded_model, sample_lon, sample_dem)
+
+    return probabilities

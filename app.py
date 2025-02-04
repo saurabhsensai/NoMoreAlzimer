@@ -62,8 +62,9 @@ with tab1:
             ptethcat = st.selectbox("Ethnicity Category", 
                                   ['Not Hispanic/Latino', 'Hispanic/Latino', 'Unknown'],
                                   key="ptethcat")
-            dx = st.selectbox("Diagnosis", ['CN', 'MCI', 'AD'], key="dx")
-            apoe4 = st.selectbox("APOE4 Status", [0, 1, 2], key="apoe4")
+            ptedu = st.text_input("Education in Years*", key="ptedu")
+            dx = st.selectbox("Diagnosis*", ['CN', 'MCI', 'AD'], key="dx")
+            apoe4 = st.selectbox("APOE4 Status*", [0, 1, 2], key="apoe4")
 
         with col2:
             st.subheader("Clinical Scores")
@@ -118,6 +119,7 @@ with tab1:
                     'FAQ': faq,
                     'APOE4': apoe4,
                     'PTETHCAT': ptethcat,
+                    'PTEDUCAT' : ptedu,
                     'PTGENDER': ptgender
                 }
                 

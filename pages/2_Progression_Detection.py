@@ -231,7 +231,7 @@ def display_prediction_results(cn_prob, mci_prob, ad_prob):
             f"""
             <div style='background-color: rgba(0, 128, 0, 0.1); padding: 20px; border-radius: 10px; text-align: center;'>
                 <h3 style='margin: 0; color: {get_color(cn_prob)};'>CN</h3>
-                <h2 style='margin: 0; color: {get_color(cn_prob)};'>{cn_prob}%</h2>
+                <h2 style='margin: 0; color: {get_color(cn_prob)};'>{cn_prob:.1%}</h2>
                 <p style='margin: 0; font-size: 0.8em;'>Cognitively Normal</p>
             </div>
             """,
@@ -243,7 +243,7 @@ def display_prediction_results(cn_prob, mci_prob, ad_prob):
             f"""
             <div style='background-color: rgba(255, 165, 0, 0.1); padding: 20px; border-radius: 10px; text-align: center;'>
                 <h3 style='margin: 0; color: {get_color(mci_prob)};'>MCI</h3>
-                <h2 style='margin: 0; color: {get_color(mci_prob)};'>{mci_prob}%</h2>
+                <h2 style='margin: 0; color: {get_color(mci_prob)};'>{mci_prob:.1%}</h2>
                 <p style='margin: 0; font-size: 0.8em;'>Mild Cognitive Impairment</p>
             </div>
             """,
@@ -255,7 +255,7 @@ def display_prediction_results(cn_prob, mci_prob, ad_prob):
             f"""
             <div style='background-color: rgba(255, 0, 0, 0.1); padding: 20px; border-radius: 10px; text-align: center;'>
                 <h3 style='margin: 0; color: {get_color(ad_prob)};'>AD</h3>
-                <h2 style='margin: 0; color: {get_color(ad_prob)};'>{ad_prob}%</h2>
+                <h2 style='margin: 0; color: {get_color(ad_prob)};'>{ad_prob:.1%}</h2>
                 <p style='margin: 0; font-size: 0.8em;'>Alzheimer's Disease</p>
             </div>
             """,
@@ -301,13 +301,15 @@ if analyze_button and selected_patient:
         last_two_rows_df = patient_data.tail(2)
         column_added = add_extra_column(last_two_rows_df)
         results = get_progression_results(column_added)
-        
+        percentages = np.array(results) * 100
+        print(round(percentages[1] , 2))
+        # rounded_percentages = np.round(percentages, 2)
 
         # Using dummy values - replace these with actual model predictions
         display_prediction_results(
-            cn_prob=6,
-            mci_prob=60,
-            ad_prob=34
+            cn_prob=results[0],
+            mci_prob=results[1],
+            ad_prob=results[2]
         )
         
         # Add a separator

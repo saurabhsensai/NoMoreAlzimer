@@ -120,7 +120,7 @@ def preprocess_inference_data(X_missing,scaler, means, stds):
 def process_data(df, means, stds, scaler, time_steps=2):
     longitudinal_data = []
     demographic_data = []
-    labels = []
+    
     
     grouped = df.groupby('PTID')
     for rid, group in grouped:
@@ -134,6 +134,6 @@ def process_data(df, means, stds, scaler, time_steps=2):
             longitudinal_data.append(scaled_plasma[:time_steps, :])
     
         demographic_data.append(group[demographic_features].iloc[0].values)
-        labels.append(group[label_column].iloc[-1])
+        
     
-    return np.array(longitudinal_data), np.array(demographic_data), np.array(labels)
+    return np.array(longitudinal_data), np.array(demographic_data)
