@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
-from utils import apply_custom_css
+from utils import apply_custom_css, add_extra_column, get_progression_results
 from database import get_all_patients, get_patient
 
 def get_patients_with_multiple_visits():
@@ -297,6 +297,12 @@ if analyze_button and selected_patient:
         st.markdown("### 🤖 Model Prediction Results")
         st.markdown("Based on the patient's progression pattern, the percentage of next visit diagnosis is:")
         
+        patient_data = get_patient(selected_patient)
+        last_two_rows_df = patient_data.tail(2)
+        column_added = add_extra_column(last_two_rows_df)
+        results = get_progression_results(column_added)
+        
+
         # Using dummy values - replace these with actual model predictions
         display_prediction_results(
             cn_prob=6,
@@ -309,7 +315,7 @@ if analyze_button and selected_patient:
         
         # Continue with the rest of the analysis
         st.info("Running detailed analysis...")
-        patient_data = get_patient(selected_patient)
+        
         
         
         # Create tabs for different visualizations

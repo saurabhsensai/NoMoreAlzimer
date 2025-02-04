@@ -25,9 +25,11 @@ def init_db():
             MMSE REAL,
             ADAS11 REAL,
             ADAS13 REAL,
+            CDRSB REAL,
             FAQ REAL,
             APOE4 INTEGER,
             PTETHCAT TEXT,
+            PTEDUCAT INTEGER,
             PTGENDER TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
@@ -64,6 +66,7 @@ def get_patient(ptid):
     conn = sqlite3.connect('patient_data.db')
     query = "SELECT * FROM patients WHERE PTID = ?"
     df = pd.read_sql_query(query, conn, params=(ptid,))
+
     conn.close()
     return df
 

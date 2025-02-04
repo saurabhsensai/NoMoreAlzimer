@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from progression_pytorch import LongitudinalModel, preprocess_inference_data, process_data
 import joblib
 
 def apply_custom_css():
@@ -103,3 +104,32 @@ def make_classification_prediction(input_data):
 def make_progression_prediction(input_data):
     # Implementation for progression prediction
     pass
+
+
+def add_extra_column(df):
+    df.loc[:, 'tr_label'] = pd.Categorical(df['DX'], categories=['CN', 'MCI', 'Dementia']).codes
+    df['PTGENDER'] = pd.Categorical(df['PTGENDER'], categories=['Female' ,'Male']).codes
+    
+    df['PTETHCAT'] = pd.Categorical(df['PTETHCAT'], categories=['Not Hispanic/Latino', 'Hispanic/Latino', 'Unknown']).codes
+  
+    return df
+
+
+def get_progression_results(df):
+
+    try:
+        scaler = joblib.load('progression_model/pr-scaler.pkl')
+    except FileNotFoundError:
+        # If scaler is not found, create a new one (for development/testing)
+        print("Error while loading scalar")
+
+    means = scaler.mean_
+    stds = scaler.scale_
+
+    le = LabelEncoder()
+
+    time_steps = 2 
+    X_test_lon_ex , X_test_dem_ex, y_test_ex = process_data(df, means, stds, scaler,  time_steps)
+    y_test_ex = le.fit_transform(y_test_ex)
+
+    return 24

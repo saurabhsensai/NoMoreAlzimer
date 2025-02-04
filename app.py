@@ -70,6 +70,7 @@ with tab1:
             mmse = st.number_input("MMSE Score", min_value=0.0, max_value=30.0, key="mmse")
             adas11 = st.number_input("ADAS11 Score", min_value=0.0, key="adas11")
             adas13 = st.number_input("ADAS13 Score", min_value=0.0, key="adas13")
+            cdrsb = st.number_input("CDRSB Score", min_value=0.0, key="cdrsb")
             faq = st.number_input("FAQ Score", min_value=0.0, key="faq")
 
         with col3:
@@ -113,6 +114,7 @@ with tab1:
                     'MMSE': mmse,
                     'ADAS11': adas11,
                     'ADAS13': adas13,
+                    'CDRSB' : cdrsb,
                     'FAQ': faq,
                     'APOE4': apoe4,
                     'PTETHCAT': ptethcat,
