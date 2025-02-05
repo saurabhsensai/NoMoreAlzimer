@@ -3,6 +3,7 @@ import pandas as pd
 from database import init_db, add_patient, get_all_patients, delete_patient
 import datetime
 
+
 # Initialize the database
 init_db()
 
@@ -46,6 +47,64 @@ tab1, tab2 = st.tabs(["📝 Data Entry", "📊 View Records"])
 with tab1:
     st.header("Patient Data Entry Form")
     
+    # Add CSV upload section
+    st.subheader("Import Data from CSV")
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+            st.write("Preview of uploaded data:")
+            st.dataframe(df.head())
+            
+            if st.button("Import CSV Data"):
+                with st.status("Importing data...", expanded=True) as status:
+                    success_count = 0
+                    error_count = 0
+                    
+                    for _, row in df.iterrows():
+                        data = {
+                            'PTID': row.get('PTID'),
+                            'NAME': row.get('NAME'),
+                            'VISCODE': row.get('VISCODE'),
+                            'C2N_plasma_ptau217_ratio': row.get('C2N_plasma_ptau217_ratio'),
+                            'C2N_plasma_Abeta42': row.get('C2N_plasma_Abeta42'),
+                            'C2N_plasma_Abeta42_Abeta40': row.get('C2N_plasma_Abeta42_Abeta40'),
+                            'C2N_plasma_ptau217': row.get('C2N_plasma_ptau217'),
+                            'Roche_plasma_GFAP': row.get('Roche_plasma_GFAP'),
+                            'C2N_plasma_nptau217': row.get('C2N_plasma_nptau217'),
+                            'Roche_plasma_NfL': row.get('Roche_plasma_NfL'),
+                            'DX': row.get('DX'),
+                            'AGE': row.get('AGE'),
+                            'MMSE': row.get('MMSE'),
+                            'ADAS11': row.get('ADAS11'),
+                            'ADAS13': row.get('ADAS13'),
+                            'CDRSB': row.get('CDRSB'),
+                            'FAQ': row.get('FAQ'),
+                            'APOE4': row.get('APOE4'),
+                            'PTETHCAT': row.get('PTETHCAT'),
+                            'PTEDUCAT': row.get('PTEDUCAT'),
+                            'PTGENDER': row.get('PTGENDER')
+                        }
+                        
+                        # Check for required fields
+                        if not data['PTID'] or not data['NAME']:
+                            error_count += 1
+                            continue
+                            
+                        if add_patient(data):
+                            success_count += 1
+                        else:
+                            error_count += 1
+                            
+                    status.update(label=f"Imported {success_count} records successfully. {error_count} records failed.", 
+                                state="complete")
+        except Exception as e:
+            st.error(f"Error reading CSV file: {str(e)}")
+
+    st.markdown("---")
+    st.subheader("Manual Data Entry")
+    
     with st.form("patient_data_form", clear_on_submit=True):
         # st.markdown('<div class="data-form">', unsafe_allow_html=True)
         
@@ -69,26 +128,26 @@ with tab1:
         with col2:
             st.subheader("Clinical Scores")
             mmse = st.number_input("MMSE Score", min_value=0.0, max_value=30.0, key="mmse")
-            adas11 = st.number_input("ADAS11 Score", min_value=0.0, key="adas11")
-            adas13 = st.number_input("ADAS13 Score", min_value=0.0, key="adas13")
-            cdrsb = st.number_input("CDRSB Score", min_value=0.0, key="cdrsb")
-            faq = st.number_input("FAQ Score", min_value=0.0, key="faq")
+            adas11 = st.number_input("ADAS11 Score",value=None,  min_value=0.0, key="adas11")
+            adas13 = st.number_input("ADAS13 Score", value=None, min_value=0.0, key="adas13")
+            cdrsb = st.number_input("CDRSB Score",value=None,  min_value=0.0, key="cdrsb")
+            faq = st.number_input("FAQ Score",value=None, min_value=0.0, key="faq")
 
         with col3:
             st.subheader("Plasma Biomarkers")
-            c2n_plasma_ptau217_ratio = st.number_input("C2N Plasma pTau217 Ratio", min_value=0.0, 
+            c2n_plasma_ptau217_ratio = st.number_input("C2N Plasma pTau217 Ratio",value=None, min_value=0.0, 
                                                       key="c2n_plasma_ptau217_ratio")
-            c2n_plasma_abeta42 = st.number_input("C2N Plasma Aβ42", min_value=0.0, 
+            c2n_plasma_abeta42 = st.number_input("C2N Plasma Aβ42", value=None, min_value=0.0, 
                                                 key="c2n_plasma_abeta42")
-            c2n_plasma_abeta42_abeta40 = st.number_input("C2N Plasma Aβ42/Aβ40 Ratio", min_value=0.0,
+            c2n_plasma_abeta42_abeta40 = st.number_input("C2N Plasma Aβ42/Aβ40 Ratio",value=None,  min_value=0.0,
                                                         key="c2n_plasma_abeta42_abeta40")
-            c2n_plasma_ptau217 = st.number_input("C2N Plasma pTau217", min_value=0.0,
+            c2n_plasma_ptau217 = st.number_input("C2N Plasma pTau217",value=None, min_value=0.0,
                                                 key="c2n_plasma_ptau217")
-            roche_plasma_gfap = st.number_input("Roche Plasma GFAP", min_value=0.0,
+            roche_plasma_gfap = st.number_input("Roche Plasma GFAP",value=None, min_value=0.0,
                                                key="roche_plasma_gfap")
-            c2n_plasma_nptau217 = st.number_input("C2N Plasma npTau217", min_value=0.0,
+            c2n_plasma_nptau217 = st.number_input("C2N Plasma npTau217", value=None, min_value=0.0,
                                                  key="c2n_plasma_nptau217")
-            roche_plasma_nfl = st.number_input("Roche Plasma NfL", min_value=0.0,
+            roche_plasma_nfl = st.number_input("Roche Plasma NfL", value=None,  min_value=0.0,
                                              key="roche_plasma_nfl")
 
         submit_button = st.form_submit_button("Submit Data")

@@ -115,7 +115,6 @@ def make_progression_prediction(input_data):
 def add_extra_column(df):
     df.loc[:, 'tr_label'] = pd.Categorical(df['DX'], categories=['CN', 'MCI', 'Dementia']).codes
     df['PTGENDER'] = pd.Categorical(df['PTGENDER'], categories=['Female' ,'Male']).codes
-    
     df['PTETHCAT'] = pd.Categorical(df['PTETHCAT'], categories=['Not Hispanic/Latino', 'Hispanic/Latino', 'Unknown']).codes
   
     return df
@@ -148,7 +147,7 @@ def predict_single(loaded_model, lon_data, dem_data):
 def get_progression_results(df):
 
     try:
-        scaler = joblib.load('progression_model/pr-scaler.pkl')
+        scaler = joblib.load('progression_model/pr-scaler_all_Data.pkl')
     except FileNotFoundError:
         # If scaler is not found, create a new one (for development/testing)
         print("Error while loading scalar")
@@ -170,7 +169,7 @@ def get_progression_results(df):
     time_steps=2
     )
     
-    loaded_model.load_state_dict(torch.load("progression_model/pytorch_progression.pth"))
+    loaded_model.load_state_dict(torch.load("progression_model/pytorch_progression_alldata.pth", map_location=device))
     loaded_model.to(device)
 
     sample_lon = X_test_lon_ex[0].cpu() 

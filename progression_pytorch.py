@@ -106,34 +106,43 @@ class LongitudinalModel(nn.Module):
 def preprocess_inference_data(X_missing,scaler, means, stds):
     X_imputed = X_missing.copy()
     
+
+    tr_label = X_imputed["tr_label"] if "tr_label" in X_imputed.columns else None
+    X_imputed = X_imputed.drop(columns=["tr_label"], errors="ignore")
+
     X_imputed_values = X_imputed.values  
     missing_mask = np.isnan(X_imputed_values) 
-    
 
     for i in range(X_imputed_values.shape[1]):
         X_imputed_values[missing_mask[:, i], i] = means[i] - stds[i]
-    X_imputed = pd.DataFrame(X_imputed_values, columns=X_missing.columns)
+
+    X_imputed = pd.DataFrame(X_imputed_values, columns=X_imputed.columns)
     
     X_scaled = scaler.transform(X_imputed)
+    X_scaled = pd.DataFrame(X_scaled, columns=X_imputed.columns)
+
+    if tr_label is not None:
+        X_scaled["tr_label"] = tr_label.values
+
     return X_scaled
+
+
+
 
 def process_data(df, means, stds, scaler, time_steps=2):
     longitudinal_data = []
     demographic_data = []
     
-    
     grouped = df.groupby('PTID')
     for rid, group in grouped:
+        if len(group) < time_steps:  
+            continue  
+
+        # Process only if the group has at least 3 rows
         scaled_plasma = preprocess_inference_data(group[plasma_features],scaler, means, stds)
-    
-        if len(group) < time_steps:
-            padded = np.zeros((time_steps, len(plasma_features)))
-            padded[:len(group), :] = scaled_plasma
-            longitudinal_data.append(padded)
-        else:
-            longitudinal_data.append(scaled_plasma[:time_steps, :])
-    
-        demographic_data.append(group[demographic_features].iloc[0].values)
+
+        longitudinal_data.append(scaled_plasma.iloc[:time_steps, :].values)  
+        demographic_data.append(group[demographic_features].iloc[0].values) 
         
     
     return np.array(longitudinal_data), np.array(demographic_data)

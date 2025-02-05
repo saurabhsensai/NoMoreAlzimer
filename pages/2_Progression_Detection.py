@@ -120,25 +120,25 @@ def create_biomarker_correlation_heatmap(df):
     )
     return fig
 
-def create_visit_intervals_analysis(df):
-    # Calculate time between visits
-    df['visit_date'] = pd.to_datetime(df['timestamp'])
-    df['days_between_visits'] = df['visit_date'].diff().dt.days
+# def create_visit_intervals_analysis(df):
+#     # Calculate time between visits
+#     df['visit_date'] = pd.to_datetime(df['timestamp'])
+#     df['days_between_visits'] = df['visit_date'].diff().dt.days
     
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=df['VISCODE'][1:],
-        y=df['days_between_visits'][1:],
-        name='Days between visits'
-    ))
+#     fig = go.Figure()
+#     fig.add_trace(go.Bar(
+#         x=df['VISCODE'][1:],
+#         y=df['days_between_visits'][1:],
+#         name='Days between visits'
+#     ))
     
-    fig.update_layout(
-        title='Visit Intervals Analysis',
-        xaxis_title='Visit',
-        yaxis_title='Days since previous visit',
-        height=400
-    )
-    return fig
+#     fig.update_layout(
+#         title='Visit Intervals Analysis',
+#         xaxis_title='Visit',
+#         yaxis_title='Days since previous visit',
+#         height=400
+#     )
+#     return fig
 
 def create_biomarker_box_plot(df):
     # Prepare data for box plot
@@ -160,32 +160,32 @@ def create_biomarker_box_plot(df):
     )
     return fig
 
-def create_cognitive_decline_rate(df):
-    # Calculate rate of change for cognitive scores
-    df['MMSE_change'] = df['MMSE'].diff() / df['days_between_visits']
-    df['ADAS11_change'] = df['ADAS11'].diff() / df['days_between_visits']
+# def create_cognitive_decline_rate(df):
+#     # Calculate rate of change for cognitive scores
+#     df['MMSE_change'] = df['MMSE'].diff() / df['days_between_visits']
+#     df['ADAS11_change'] = df['ADAS11'].diff() / df['days_between_visits']
     
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=df['VISCODE'][1:],
-        y=df['MMSE_change'][1:],
-        name='MMSE Change Rate',
-        mode='lines+markers'
-    ))
-    fig.add_trace(go.Scatter(
-        x=df['VISCODE'][1:],
-        y=df['ADAS11_change'][1:],
-        name='ADAS11 Change Rate',
-        mode='lines+markers'
-    ))
+#     fig = go.Figure()
+#     fig.add_trace(go.Scatter(
+#         x=df['VISCODE'][1:],
+#         y=df['MMSE_change'][1:],
+#         name='MMSE Change Rate',
+#         mode='lines+markers'
+#     ))
+#     fig.add_trace(go.Scatter(
+#         x=df['VISCODE'][1:],
+#         y=df['ADAS11_change'][1:],
+#         name='ADAS11 Change Rate',
+#         mode='lines+markers'
+#     ))
     
-    fig.update_layout(
-        title='Rate of Cognitive Decline',
-        xaxis_title='Visit',
-        yaxis_title='Change per day',
-        height=400
-    )
-    return fig
+#     fig.update_layout(
+#         title='Rate of Cognitive Decline',
+#         xaxis_title='Visit',
+#         yaxis_title='Change per day',
+#         height=400
+#     )
+#     return fig
 
 def create_combined_score_analysis(df):
     # Create a combined score using multiple metrics
@@ -299,10 +299,13 @@ if analyze_button and selected_patient:
         
         patient_data = get_patient(selected_patient)
         last_two_rows_df = patient_data.tail(2)
+        print(last_two_rows_df)
+        last_two_rows_df.to_csv("temp.csv", index=False)
         column_added = add_extra_column(last_two_rows_df)
+        column_added.fillna(np.nan, inplace=True)
+        print(column_added)
         results = get_progression_results(column_added)
-        percentages = np.array(results) * 100
-        print(round(percentages[1] , 2))
+      
         # rounded_percentages = np.round(percentages, 2)
 
         # Using dummy values - replace these with actual model predictions
@@ -321,9 +324,8 @@ if analyze_button and selected_patient:
         
         
         # Create tabs for different visualizations
-        tab1, tab2, tab3, tab4, tab5 = st.tabs([
-            "Biomarkers", "Cognitive Scores", "Advanced Analysis", 
-            "Rate of Change", "Correlations"
+        tab1, tab2, tab3, tab4 = st.tabs([
+            "Biomarkers", "Cognitive Scores", "Advanced Analysis", "Correlations"
         ])
         
         with tab1:
@@ -336,12 +338,8 @@ if analyze_button and selected_patient:
             
         with tab3:
             st.plotly_chart(create_combined_score_analysis(patient_data), use_container_width=True)
-            st.plotly_chart(create_visit_intervals_analysis(patient_data), use_container_width=True)
-            
+            # st.plotly_chart(create_visit_intervals_analysis(patient_data), use_container_width=True)
         with tab4:
-            st.plotly_chart(create_cognitive_decline_rate(patient_data), use_container_width=True)
-            
-        with tab5:
             st.plotly_chart(create_biomarker_correlation_heatmap(patient_data), use_container_width=True)
             
         # Add statistical summary
