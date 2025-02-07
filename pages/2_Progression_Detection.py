@@ -295,7 +295,7 @@ if analyze_button and selected_patient:
     try:
         # Display model prediction results first
         st.markdown("### 🤖 Model Prediction Results")
-        st.markdown("Based on the patient's progression pattern, the percentage of next visit diagnosis is:")
+        st.markdown("Based on the patient's progression pattern, the percentage of next visit diagnosis after **6 Months** is:")
         
         patient_data = get_patient(selected_patient)
         last_two_rows_df = patient_data.tail(2)

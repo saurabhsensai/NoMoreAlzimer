@@ -11,25 +11,67 @@ apply_custom_css()
 st.title("🔍 Classification Analysis")
 st.markdown("""
     This page analyzes various biomarkers and clinical data to provide classification predictions.
-    Please input the required parameters below or upload a CSV file.
+    Please upload a CSV file or input parameters manually.
 """)
 
 # Define required columns for CSV upload
-REQUIRED_COLUMNS = [
+REQUIRED_COLUMNS = ['RID',
     'C2N_plasma_ptau217_ratio', 'C2N_plasma_Abeta42', 'C2N_plasma_Abeta42_Abeta40',
     'C2N_plasma_ptau217', 'Roche_plasma_GFAP', 'C2N_plasma_nptau217', 'Roche_plasma_NfL',
-    'AGE', 'MMSE', 'ADAS11', 'ADAS13', 'FAQ', 'APOE4', 'PTETHCAT', 'PTGENDER'
+    'AGE', 'MMSE', 'ADAS11', 'ADAS13', 'FAQ', 'APOE4', 'PTETHCAT', 'PTGENDER', 'PTEDUCAT'
 ]
 
-# File uploader section
-uploaded_file = st.file_uploader("Upload CSV file (optional)", type=["csv"])
+# Initialize session state for form fields
+session_state_keys = [
+    'c2n_plasma_ptau217_ratio', 'c2n_plasma_abeta42', 'c2n_plasma_abeta42_abeta40',
+    'c2n_plasma_ptau217', 'roche_plasma_gfap', 'c2n_plasma_nptau217', 'roche_plasma_nfl',
+    'age', 'mmse', 'adas11', 'adas13', 'faq', 'apoe4', 'ptethcat', 'ptgender', 'ptedu'
+]
+
+for key in session_state_keys:
+    if key not in st.session_state:
+        st.session_state[key] = None
+
+# Function to process uploaded file (only populates form fields)
+def process_uploaded_file():
+    if st.session_state.uploaded_file is not None:
+        try:
+            df = pd.read_csv(st.session_state.uploaded_file)
+            
+            # Validate CSV structure
+            missing_cols = [col for col in REQUIRED_COLUMNS if col not in df.columns]
+            if missing_cols:
+                st.error(f"Missing columns in CSV: {', '.join(missing_cols)}")
+            else:
+                # Populate form fields with the first row of data
+                first_row = df.iloc[0]
+                
+                # Update session state for all input fields
+                st.session_state.c2n_plasma_ptau217_ratio = first_row['C2N_plasma_ptau217_ratio']
+                st.session_state.c2n_plasma_abeta42 = first_row['C2N_plasma_Abeta42']
+                st.session_state.c2n_plasma_abeta42_abeta40 = first_row['C2N_plasma_Abeta42_Abeta40']
+                st.session_state.c2n_plasma_ptau217 = first_row['C2N_plasma_ptau217']
+                st.session_state.roche_plasma_gfap = first_row['Roche_plasma_GFAP']
+                st.session_state.c2n_plasma_nptau217 = first_row['C2N_plasma_nptau217']
+                st.session_state.roche_plasma_nfl = first_row['Roche_plasma_NfL']
+                st.session_state.age = first_row['AGE']
+                st.session_state.mmse = first_row['MMSE']
+                st.session_state.adas11 = first_row['ADAS11']
+                st.session_state.adas13 = first_row['ADAS13']
+                st.session_state.faq = first_row['FAQ']
+                st.session_state.apoe4 = first_row['APOE4']
+                st.session_state.ptethcat = first_row['PTETHCAT']
+                st.session_state.ptgender = first_row['PTGENDER']
+                st.session_state.ptedu = first_row['PTEDUCAT']
+        
+        except Exception as e:
+            st.error(f"Error processing CSV file: {str(e)}")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"], key="uploaded_file", on_change=process_uploaded_file)
 
 # Create two columns for layout
 col1, col2 = st.columns(2)
-
-# Initialize session state for batch results
-if 'batch_results' not in st.session_state:
-    st.session_state.batch_results = None
 
 # Input form for manual entry
 with st.form("classification_form"):
@@ -37,82 +79,94 @@ with st.form("classification_form"):
     
     with col1:
         st.markdown("### Plasma Biomarkers")
-        c2n_plasma_ptau217_ratio = st.number_input("C2N Plasma pTau217 Ratio", min_value=0.0)
-        c2n_plasma_abeta42 = st.number_input("C2N Plasma Aβ42", min_value=0.0)
-        c2n_plasma_abeta42_abeta40 = st.number_input("C2N Plasma Aβ42/Aβ40 Ratio", min_value=0.0)
-        c2n_plasma_ptau217 = st.number_input("C2N Plasma pTau217", min_value=0.0)
-        roche_plasma_gfap = st.number_input("Roche Plasma GFAP", min_value=0.0)
-        c2n_plasma_nptau217 = st.number_input("C2N Plasma npTau217", min_value=0.0)
-        roche_plasma_nfl = st.number_input("Roche Plasma NfL", min_value=0.0)
+        c2n_plasma_ptau217_ratio = st.number_input("C2N Plasma pTau217 Ratio", 
+            value=st.session_state.get('c2n_plasma_ptau217_ratio', None), 
+            min_value=0.0, key='c2n_plasma_ptau217_ratio')
+        c2n_plasma_abeta42 = st.number_input("C2N Plasma Aβ42",
+            value=st.session_state.get('c2n_plasma_abeta42', None), 
+            min_value=0.0, key='c2n_plasma_abeta42')
+        c2n_plasma_abeta42_abeta40 = st.number_input("C2N Plasma Aβ42/Aβ40 Ratio",
+            value=st.session_state.get('c2n_plasma_abeta42_abeta40', None), 
+            min_value=0.0, key='c2n_plasma_abeta42_abeta40')
+        c2n_plasma_ptau217 = st.number_input("C2N Plasma pTau217",
+            value=st.session_state.get('c2n_plasma_ptau217', None), 
+            min_value=0.0, key='c2n_plasma_ptau217')
+        roche_plasma_gfap = st.number_input("Roche Plasma GFAP", 
+            value=st.session_state.get('roche_plasma_gfap', None), 
+            min_value=0.0, key='roche_plasma_gfap')
+        c2n_plasma_nptau217 = st.number_input("C2N Plasma npTau217",
+            value=st.session_state.get('c2n_plasma_nptau217', None), 
+            min_value=0.0, key='c2n_plasma_nptau217')
+        roche_plasma_nfl = st.number_input("Roche Plasma NfL",
+            value=st.session_state.get('roche_plasma_nfl', None), 
+            min_value=0.0, key='roche_plasma_nfl')
         
     with col2:
         st.markdown("### Clinical Parameters")
-        age = st.number_input("Age", min_value=0, max_value=120)
-        mmse = st.number_input("MMSE Score", min_value=0, max_value=30)
-        adas11 = st.number_input("ADAS11 Score", min_value=0.0)
-        adas13 = st.number_input("ADAS13 Score", min_value=0.0)
-        faq = st.number_input("FAQ Score", min_value=0.0)
-        apoe4 = st.selectbox("APOE4 Status", options=[0, 1, 2])
-        ptethcat = st.selectbox("Ethnicity Category", options=['Not Hispanic/Latino', 'Hispanic/Latino'])
-        ptgender = st.selectbox("Gender", options=['Male', 'Female'])
+        age = st.number_input("Age", 
+            value=st.session_state.get('age', None), 
+            min_value=0.0, max_value=120.0,  key='age')
+        mmse = st.number_input("MMSE Score",
+            value=st.session_state.get('mmse', None), 
+            min_value=0.0, max_value=30.0, key='mmse')
+        adas11 = st.number_input("ADAS11 Score",
+            value=st.session_state.get('adas11', None), 
+            min_value=0.0, key='adas11')
+        adas13 = st.number_input("ADAS13 Score",
+            value=st.session_state.get('adas13', None), 
+            min_value=0.0, key='adas13')
+        faq = st.number_input("FAQ Score",
+            value=st.session_state.get('faq', None), 
+            min_value=0.0, key='faq')
+        apoe4 = st.selectbox("APOE4 Status", 
+            options=[0, 1, 2],
+            index=[0, 1, 2].index(st.session_state.get('apoe4', 0)) if st.session_state.get('apoe4') is not None else 0,
+            key='apoe4')
+        ptethcat = st.selectbox("Ethnicity Category", 
+                    options=[0, 1, 2],
+                    index=[0, 1, 2].index(st.session_state.get('ptethcat', 0)) 
+                    if st.session_state.get('ptethcat') is not None else 0,
+                    format_func=lambda x: {0: 'Not Hispanic/Latino', 1: 'Hispanic/Latino', 2: 'Unknown'}[x],
+                    key='ptethcat')
 
+        ptgender = st.selectbox("Gender", 
+            options=[0, 1],
+            index=[0, 1].index(st.session_state.get('ptgender', 0)) 
+            if st.session_state.get('ptgender') is not None else 0,
+            format_func=lambda x: {0: 'Female', 1: 'Male'}[x],
+            key='ptgender')
+        ptedu = st.number_input("Education in Years", 
+            value=st.session_state.get('ptedu', None), 
+            min_value=0, key='ptedu')
+
+        
     submit_button = st.form_submit_button("Generate Classification")
 
-# Handle predictions
+# Handle submission
 if submit_button:
-    if uploaded_file is not None:
-        # Process CSV file
-        try:
-            df = pd.read_csv(uploaded_file)
-            
-            # Validate CSV structure
-            missing_cols = [col for col in REQUIRED_COLUMNS if col not in df.columns]
-            if missing_cols:
-                st.error(f"Missing columns in CSV: {', '.join(missing_cols)}")
-            else:
-                predictions = []
-                for _, row in df.iterrows():
-                    input_data = {col: row[col] for col in REQUIRED_COLUMNS}
-                    prediction = make_classification_prediction(input_data)
-                    
-                    if prediction is not None:
-                        class_names = ['CN', 'MCI', 'AD']
-                        max_prob_idx = np.argmax(prediction)
-                        predictions.append({
-                            'Prediction': class_names[max_prob_idx],
-                            'Confidence': f"{prediction[max_prob_idx]:.1%}",
-                            **{f"{cls} Probability": f"{prob:.1%}" for cls, prob in zip(class_names, prediction)},
-                            **input_data
-                        })
-                
-                if predictions:
-                    st.session_state.batch_results = pd.DataFrame(predictions)
-                    st.success(f"Successfully processed {len(predictions)} records!")
-                    
-        except Exception as e:
-            st.error(f"Error processing CSV file: {str(e)}")
+    # Prepare input data
+    input_data = {
+        'RID': 1,
+        'C2N_plasma_ptau217_ratio': c2n_plasma_ptau217_ratio,
+        'C2N_plasma_Abeta42': c2n_plasma_abeta42,
+        'C2N_plasma_Abeta42_Abeta40': c2n_plasma_abeta42_abeta40,
+        'C2N_plasma_ptau217': c2n_plasma_ptau217,
+        'Roche_plasma_GFAP': roche_plasma_gfap,
+        'C2N_plasma_nptau217': c2n_plasma_nptau217,
+        'Roche_plasma_NfL': roche_plasma_nfl,
+        'AGE': age,
+        'MMSE': mmse,
+        'ADAS11': adas11,
+        'ADAS13': adas13,
+        'FAQ': faq,
+        'APOE4': apoe4,
+        'PTETHCAT': ptethcat,
+        'PTGENDER': ptgender,
+        'PTEDUCAT': ptedu
+    }
     
-    else:
-        # Process manual input
-        input_data = {
-            'C2N_plasma_ptau217_ratio': c2n_plasma_ptau217_ratio,
-            'C2N_plasma_Abeta42': c2n_plasma_abeta42,
-            'C2N_plasma_Abeta42_Abeta40': c2n_plasma_abeta42_abeta40,
-            'C2N_plasma_ptau217': c2n_plasma_ptau217,
-            'Roche_plasma_GFAP': roche_plasma_gfap,
-            'C2N_plasma_nptau217': c2n_plasma_nptau217,
-            'Roche_plasma_NfL': roche_plasma_nfl,
-            'AGE': age,
-            'MMSE': mmse,
-            'ADAS11': adas11,
-            'ADAS13': adas13,
-            'FAQ': faq,
-            'APOE4': apoe4,
-            'PTETHCAT': ptethcat,
-            'PTGENDER': ptgender
-        }
-        
-        prediction = make_classification_prediction(input_data)
+    # Make prediction
+    prediction = make_classification_prediction(input_data)
     
     if prediction is not None:
         st.markdown("### 🎯 Classification Results")
@@ -125,9 +179,7 @@ if submit_button:
         max_prob_idx = np.argmax(prediction)
         max_prob_class = class_names[max_prob_idx]
         
-        # Create three columns for the main prediction display
         col1, col2, col3 = st.columns([1, 2, 1])
-        
         with col2:
             st.markdown(f"""
             <div class="prediction-box" style="text-align: center;">
@@ -140,25 +192,19 @@ if submit_button:
         
         # 2. Radar Chart
         fig_radar = go.Figure()
-        
         fig_radar.add_trace(go.Scatterpolar(
             r=prediction * 100,
             theta=class_names,
             fill='toself',
             name='Prediction Probabilities'
         ))
-        
         fig_radar.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 100]
-                )),
+            polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
             showlegend=False,
             title="Probability Distribution (Radar View)"
         )
         
-        # 3. Gauge Chart for Confidence
+        # 3. Gauge Chart
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number",
             value=prediction[max_prob_idx] * 100,
@@ -189,7 +235,6 @@ if submit_button:
             text=[f'{p:.1f}%' for p in prediction * 100],
             textposition='auto',
         ))
-        
         fig_bar.update_layout(
             title="Probability Distribution by Class",
             xaxis_title="Probability (%)",
@@ -197,7 +242,7 @@ if submit_button:
             showlegend=False
         )
         
-        # 5. Create tabs for different visualizations
+        # 5. Visualization Tabs
         tab1, tab2, tab3 = st.tabs(["📊 Distribution", "🎯 Confidence", "📈 Details"])
         
         with tab1:
@@ -218,20 +263,16 @@ if submit_button:
                 'Probability': prediction,
                 'Confidence Level': ['High' if p > 0.7 else 'Medium' if p > 0.4 else 'Low' for p in prediction]
             })
-            
-            styled_df = results_df.style.format({
-                'Probability': '{:.2%}'
-            }).background_gradient(subset=['Probability'], cmap='Blues')
-            
+            styled_df = results_df.style.format({'Probability': '{:.2%}'}).background_gradient(subset=['Probability'], cmap='Blues')
             st.dataframe(styled_df, use_container_width=True)
             
-            # Feature importance visualization (if available)
+            # Feature summary
             st.markdown("### Input Features Summary")
             features_df = pd.DataFrame([input_data])
             styled_features = features_df.style.background_gradient(cmap='viridis')
             st.dataframe(styled_features, use_container_width=True)
         
-        # 6. Additional Information
+        # 6. Interpretation Guidelines
         st.markdown("### 📌 Interpretation Guidelines")
         st.info("""
         - **High Confidence**: > 70% probability
@@ -248,7 +289,6 @@ if submit_button:
             **{f"{cls} Probability": f"{prob:.1%}" for cls, prob in zip(class_names, prediction)},
             **input_data
         }
-        
         results_df = pd.DataFrame([results_dict])
         csv = results_df.to_csv(index=False)
         st.download_button(
