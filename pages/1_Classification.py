@@ -3,17 +3,180 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
-from utils import apply_custom_css, make_classification_prediction
+import base64
 
-# Apply custom CSS
-apply_custom_css()
 
-st.title("🔍 Classification Analysis")
+from utils import  apply_custom_css, make_classification_prediction
+def get_base64_of_bin_file(image_path):
+    with open(image_path, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+#  background-image: url("data:image/png;base64,{bin_str}");
+
+def set_bg_hack(image_path):
+    try:
+        bin_str = get_base64_of_bin_file(image_path)
+        bg_img = f"""
+        .hero-section {{
+            background-image: url("https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+           
+        }}
+        """
+    except Exception:
+        bg_img = """
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        """
+    return bg_img
+
+# Page configuration
+st.set_page_config(
+    page_title="Alzheimer's Research Platform",
+    page_icon="🧬",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Get background image CSS
+hero_bg = set_bg_hack('images/mri.png')  # Replace with your image path
+
+# Custom CSS with modern styling and hero background
+st.markdown(f"""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    
+    html, body, [class*="css"] {{
+        font-family: 'Inter', sans-serif;
+        color: #333333;
+    }}
+            
+    .hero-section {{
+        position: relative;
+        text-align: center;
+        padding: 4rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }}
+    
+    {hero_bg}
+    
+    .hero-overlay {{
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0);
+        backdrop-filter: blur(0px);
+    }}
+    
+    .hero-content {{
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.90);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }}
+    
+    .hero-title {{
+        color: #000000 !important;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: none !important;
+    }}
+    
+    .hero-subtitle {{
+        color: #475569;
+        font-size: 1.25rem;
+        line-height: 1.6;
+    }}
+
+    .main {{
+        padding: 2rem;
+        background-color: #f8fafc;
+    }}
+    
+    .stButton>button {{
+        width: 100%;
+        border-radius: 8px;
+        height: 3rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: #ffffff;
+    }}
+
+    .data-form {{
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+    }}
+
+    .delete-button {{
+        background-color: #dc3545;
+        color: white;
+    }}
+
+    .delete-button:hover {{
+        background-color: #c82333;
+        color: white;
+    }}
+
+    /* Statistics Cards Styling */
+    .stat-card {{
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+        margin: 0.5rem 0;
+    }}
+
+    .stat-card:hover {{
+        transform: translateY(-5px);
+    }}
+
+    .stat-card h3 {{
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }}
+
+    .stat-card h2 {{
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0;
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
+# Hero Section
 st.markdown("""
-    This page analyzes various biomarkers and clinical data to provide classification predictions.
-    Please upload a CSV file or input parameters manually.
-""")
-
+    <div class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Alzheimer's Research Platform</h1>
+            <p class="hero-subtitle">
+                Advanced Data Management for Alzheimer's Disease Research<br>
+                Streamlining patient data collection and analysis for breakthrough discoveries
+            </p>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+# Statistics Cards with enhanced styling
+stats_container = st.container()
 # Define required columns for CSV upload
 REQUIRED_COLUMNS = ['RID',
     'C2N_plasma_ptau217_ratio', 'C2N_plasma_Abeta42', 'C2N_plasma_Abeta42_Abeta40',

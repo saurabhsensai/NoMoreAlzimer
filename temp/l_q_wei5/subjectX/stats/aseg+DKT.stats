@@ -1,0 +1,165 @@
+# Title Segmentation Statistics
+#
+# generating_program segstats.py
+# FastSurfer_version 2.4.2
+# cmdline /fastsurfer/FastSurferCNN/segstats.py --segfile /output/subjectX/mri/aparc.DKTatlas+aseg.deep.mgz --segstatsfile /output/subjectX/stats/aseg+DKT.stats --normfile /output/subjectX/mri/orig_nu.mgz --threads 20 --empty --excludeid 0 --sd /output --sid subjectX --ids 2 4 5 7 8 10 11 12 13 14 15 16 17 18 24 26 28 31 41 43 44 46 47 49 50 51 52 53 54 58 60 63 77 251 252 253 254 255 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1024 1025 1026 1027 1028 1029 1030 1031 1034 1035 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2034 2035 --lut /fastsurfer/FastSurferCNN/config/FreeSurferColorLUT.txt measures --compute Mask(/output/subjectX/mri/mask.mgz) BrainSeg BrainSegNotVent SupraTentorial SupraTentorialNotVent SubCortGray rhCerebralWhiteMatter lhCerebralWhiteMatter CerebralWhiteMatter
+# sysname  Linux
+# hostname 4f3e004d6b2c
+# machine  x86_64
+# user       UNKNOWN
+# anatomy_type volume
+#
+# SUBJECT_DIR /output
+# subjectname subjectX
+# Measure Mask, MaskVol, Mask Volume, 1301174.000000, mm^3
+# Measure BrainSeg, BrainSegVol, Brain Segmentation Volume, 974921.847332, mm^3
+# Measure BrainSegNotVent, BrainSegVolNotVent, Brain Segmentation Volume Without Ventricles, 939203.757050, mm^3
+# Measure SupraTentorial, SupraTentorialVol, Supratentorial volume, 859184.727462, mm^3
+# Measure SupraTentorialNotVent, SupraTentorialVolNotVent, Supratentorial volume, 823466.637180, mm^3
+# Measure SubCortGray, SubCortGrayVol, Subcortical gray matter volume, 45830.587233, mm^3
+# Measure rhCerebralWhiteMatter, rhCerebralWhiteMatterVol, Right hemisphere cerebral white matter volume, 222054.815360, mm^3
+# Measure lhCerebralWhiteMatter, lhCerebralWhiteMatterVol, Left hemisphere cerebral white matter volume, 219602.268988, mm^3
+# Measure CerebralWhiteMatter, CerebralWhiteMatterVol, Total cerebral white matter volume, 441657.084348, mm^3
+# SegVolFile /output/subjectX/mri/aparc.DKTatlas+aseg.deep.mgz
+# SegVolFileTimestamp 2025/03/17 14:34:12
+# ColorTable /fastsurfer/FastSurferCNN/config/FreeSurferColorLUT.txt
+# ColorTableTimestamp 2024/09/04 10:37:40
+# InVolFile /output/subjectX/mri/orig_nu.mgz
+# InVolFileTimestamp 2025/03/17 14:34:54
+# ExcludeSegId 0
+# Only reporting non-empty segmentations
+# compatibility with freesurfer's mri_segstats: fixed
+# VoxelVolume_mm3 1.0
+# TableCol  1 ColHeader Index
+# TableCol  1 FieldName Index
+# TableCol  1 Units     NA
+# TableCol  2 ColHeader SegId
+# TableCol  2 FieldName Segmentation Id
+# TableCol  2 Units     NA
+# TableCol  3 ColHeader NVoxels
+# TableCol  3 FieldName Number of Voxels
+# TableCol  3 Units     unitless
+# TableCol  4 ColHeader Volume_mm3
+# TableCol  4 FieldName Volume
+# TableCol  4 Units     mm^3
+# TableCol  5 ColHeader StructName
+# TableCol  5 FieldName Structure Name
+# TableCol  5 Units     NA
+# TableCol  6 ColHeader normMean
+# TableCol  6 FieldName Intensity normMean
+# TableCol  6 Units     MR
+# TableCol  7 ColHeader normStdDev
+# TableCol  7 FieldName Intensity normStdDev
+# TableCol  7 Units     MR
+# TableCol  8 ColHeader normMin
+# TableCol  8 FieldName Intensity normMin
+# TableCol  8 Units     MR
+# TableCol  9 ColHeader normMax
+# TableCol  9 FieldName Intensity normMax
+# TableCol  9 Units     MR
+# TableCol 10 ColHeader normRange
+# TableCol 10 FieldName Intensity normRange
+# TableCol 10 Units     MR
+# NRows 100
+# NTableCols 10
+# ColHeaders  Index SegId NVoxels Volume_mm3 StructName normMean normStdDev normMin normMax normRange
+  1   2    213030 217801.269  Left-Cerebral-White-Matter       104.3869     6.8190    46.0000   126.0000    80.0000
+  2   4     12138  12579.053  Left-Lateral-Ventricle            42.6887     9.5504    30.0000   147.0000   117.0000
+  3   5       481    548.390  Left-Inf-Lat-Vent                 56.3347     9.7587    35.0000    84.0000    49.0000
+  4   7     11996  12796.912  Left-Cerebellum-White-Matter     108.9366     7.2073    53.0000   127.0000    74.0000
+  5   8     47349  44762.231  Left-Cerebellum-Cortex            87.5394    11.6819    32.0000   119.0000    87.0000
+  6  10      5916   5666.483  Left-Thalamus                     94.6308     8.9419    52.0000   113.0000    61.0000
+  7  11      3550   3461.352  Left-Caudate                      89.4369     7.6605    61.0000   107.0000    46.0000
+  8  12      4052   3977.083  Left-Putamen                      96.4921     4.2745    74.0000   109.0000    35.0000
+  9  13      1796   1795.136  Left-Pallidum                    105.7500     3.5326    91.0000   122.0000    31.0000
+ 10  14      1754   1836.666  3rd-Ventricle                     43.1574     9.6554    29.0000    75.0000    46.0000
+ 11  15      1375   1535.007  4th-Ventricle                     48.9789    11.7335    29.0000    83.0000    54.0000
+ 12  16     20006  19526.409  Brain-Stem                       100.7493     9.5400    42.0000   122.0000    80.0000
+ 13  17      3324   3161.439  Left-Hippocampus                  82.8204     8.7516    46.0000   102.0000    56.0000
+ 14  18      1063   1048.490  Left-Amygdala                     86.8805     6.2719    59.0000   105.0000    46.0000
+ 15  24      1800   1744.128  CSF                               50.9439    10.5868    31.0000    91.0000    60.0000
+ 16  26       424    424.880  Left-Accumbens-area               89.8892     4.0370    69.0000   100.0000    31.0000
+ 17  28      3650   3481.274  Left-VentralDC                    99.0973    10.8130    51.0000   123.0000    72.0000
+ 18  31       924    861.855  Left-choroid-plexus               55.5725    10.0747    33.0000    87.0000    54.0000
+ 19  41    215358 220911.815  Right-Cerebral-White-Matter      104.6122     6.6485    45.0000   127.0000    82.0000
+ 20  43     14122  14392.067  Right-Lateral-Ventricle           41.5313     9.3846    28.0000   100.0000    72.0000
+ 21  44      1405   1469.509  Right-Inf-Lat-Vent                48.3274    11.3303    30.0000    80.0000    50.0000
+ 22  46     11296  11985.726  Right-Cerebellum-White-Matter    108.8933     7.0790    61.0000   125.0000    64.0000
+ 23  47     48646  46192.250  Right-Cerebellum-Cortex           87.9160    11.6152    33.0000   120.0000    87.0000
+ 24  49      5780   5509.924  Right-Thalamus                    93.7957     8.9484    48.0000   110.0000    62.0000
+ 25  50      3491   3420.135  Right-Caudate                     89.6502     8.1593    59.0000   106.0000    47.0000
+ 26  51      4290   4279.327  Right-Putamen                     96.0012     4.7585    58.0000   108.0000    50.0000
+ 27  52      1777   1762.605  Right-Pallidum                   105.8672     3.4165    90.0000   122.0000    32.0000
+ 28  53      2997   2790.911  Right-Hippocampus                 80.9806    10.4490    35.0000   107.0000    72.0000
+ 29  54      1154   1123.524  Right-Amygdala                    86.2158     7.4748    54.0000   107.0000    53.0000
+ 30  58       467    478.123  Right-Accumbens-area              89.3191     4.4768    66.0000    99.0000    33.0000
+ 31  60      3618   3449.902  Right-VentralDC                   97.8563    11.4189    48.0000   122.0000    74.0000
+ 32  63       848    751.415  Right-choroid-plexus              55.2818    10.1546    34.0000    85.0000    51.0000
+ 33  77      2944   2981.678  WM-hypointensities                79.6240     9.3732    55.0000   103.0000    48.0000
+ 34 251         0      0.000  CC_Posterior                       0.0000     0.0000     0.0000     0.0000     0.0000
+ 35 252         0      0.000  CC_Mid_Posterior                   0.0000     0.0000     0.0000     0.0000     0.0000
+ 36 253         0      0.000  CC_Central                         0.0000     0.0000     0.0000     0.0000     0.0000
+ 37 254         0      0.000  CC_Mid_Anterior                    0.0000     0.0000     0.0000     0.0000     0.0000
+ 38 255         0      0.000  CC_Anterior                        0.0000     0.0000     0.0000     0.0000     0.0000
+ 39 1002      2739   2605.083  ctx-lh-caudalanteriorcingulate    80.9529     7.1143    61.0000    97.0000    36.0000
+ 40 1003      5658   5051.691  ctx-lh-caudalmiddlefrontal        82.9883     8.2103    58.0000   101.0000    43.0000
+ 41 1005      2746   2341.495  ctx-lh-cuneus                     82.9971     9.2641    61.0000   104.0000    43.0000
+ 42 1006      1535   1359.715  ctx-lh-entorhinal                 81.6853     8.1347    60.0000   100.0000    40.0000
+ 43 1007      5871   5505.763  ctx-lh-fusiform                   82.0135     7.8887    59.0000   100.0000    41.0000
+ 44 1008      8673   7744.662  ctx-lh-inferiorparietal           80.0279     8.3970    57.0000   100.0000    43.0000
+ 45 1009      8198   7703.088  ctx-lh-inferiortemporal           81.7420     8.0415    58.0000   106.0000    48.0000
+ 46 1010      2126   1912.799  ctx-lh-isthmuscingulate           83.0800     7.9638    60.0000   103.0000    43.0000
+ 47 1011      7608   6343.456  ctx-lh-lateraloccipital           82.4292     9.4478    56.0000   107.0000    51.0000
+ 48 1012      6889   6370.921  ctx-lh-lateralorbitofrontal       80.8142     8.5039    53.0000   105.0000    52.0000
+ 49 1013      5707   5094.722  ctx-lh-lingual                    84.5980     8.5008    62.0000   106.0000    44.0000
+ 50 1014      3380   3159.952  ctx-lh-medialorbitofrontal        80.5423     8.6141    59.0000   103.0000    44.0000
+ 51 1015      9547   8483.858  ctx-lh-middletemporal             81.9348     7.8713    59.0000   104.0000    45.0000
+ 52 1016      2092   1900.817  ctx-lh-parahippocampal            81.0320     7.9303    58.0000   102.0000    44.0000
+ 53 1017      3458   3022.632  ctx-lh-paracentral                85.8381     9.6730    60.0000   108.0000    48.0000
+ 54 1018      3914   3654.629  ctx-lh-parsopercularis            81.5537     7.7253    60.0000    98.0000    38.0000
+ 55 1019      1995   1785.306  ctx-lh-parsorbitalis              80.6015     8.0936    58.0000   104.0000    46.0000
+ 56 1020      2840   2447.918  ctx-lh-parstriangularis           81.6655     8.0573    61.0000    97.0000    36.0000
+ 57 1021      2057   1804.714  ctx-lh-pericalcarine              84.4886     9.5937    60.0000   105.0000    45.0000
+ 58 1022      7748   6514.450  ctx-lh-postcentral                81.0630     9.4107    57.0000   107.0000    50.0000
+ 59 1023      2559   2394.713  ctx-lh-posteriorcingulate         81.2974     7.2829    61.0000    98.0000    37.0000
+ 60 1024     10454   9170.310  ctx-lh-precentral                 84.9023     9.5596    59.0000   108.0000    49.0000
+ 61 1025      7656   7250.657  ctx-lh-precuneus                  82.0196     8.1627    58.0000   100.0000    42.0000
+ 62 1026      3428   3340.538  ctx-lh-rostralanteriorcingulate    79.4612     6.8869    58.0000    99.0000    41.0000
+ 63 1027      7860   7203.101  ctx-lh-rostralmiddlefrontal       79.9532     7.4082    56.0000    98.0000    42.0000
+ 64 1028     20540  18903.477  ctx-lh-superiorfrontal            80.3037     8.6583    56.0000   104.0000    48.0000
+ 65 1029      8185   7414.930  ctx-lh-superiorparietal           79.4657     8.6822    56.0000   101.0000    45.0000
+ 66 1030     15255  13695.401  ctx-lh-superiortemporal           80.7327     8.0259    57.0000   101.0000    44.0000
+ 67 1031      8255   7473.467  ctx-lh-supramarginal              79.7131     8.3771    54.0000    99.0000    45.0000
+ 68 1034      1163   1046.480  ctx-lh-transversetemporal         84.0370     9.5586    59.0000   100.0000    41.0000
+ 69 1035      5152   5065.792  ctx-lh-insula                     79.5111     7.7464    57.0000   100.0000    43.0000
+ 70 2002      2070   1976.817  ctx-rh-caudalanteriorcingulate    79.8111     6.9700    60.0000    97.0000    37.0000
+ 71 2003      6279   5644.209  ctx-rh-caudalmiddlefrontal        83.7570     8.5789    58.0000   103.0000    45.0000
+ 72 2005      3082   2618.398  ctx-rh-cuneus                     82.4426     9.3741    56.0000   103.0000    47.0000
+ 73 2006      1418   1209.926  ctx-rh-entorhinal                 81.4817     9.0268    55.0000    99.0000    44.0000
+ 74 2007      5855   5467.224  ctx-rh-fusiform                   83.2412     7.7650    58.0000   102.0000    44.0000
+ 75 2008      9409   8368.840  ctx-rh-inferiorparietal           80.3830     8.4730    56.0000   101.0000    45.0000
+ 76 2009      8429   7958.968  ctx-rh-inferiortemporal           84.4208     8.0188    60.0000   105.0000    45.0000
+ 77 2010      2021   1807.382  ctx-rh-isthmuscingulate           83.0549     8.0659    62.0000   104.0000    42.0000
+ 78 2011      8809   7541.636  ctx-rh-lateraloccipital           83.9684     9.2994    59.0000   107.0000    48.0000
+ 79 2012      6806   6243.766  ctx-rh-lateralorbitofrontal       79.7567     8.5987    53.0000   100.0000    47.0000
+ 80 2013      6300   5726.148  ctx-rh-lingual                    83.3943     8.5838    57.0000   105.0000    48.0000
+ 81 2014      3461   3341.824  ctx-rh-medialorbitofrontal        79.2626     7.9762    57.0000   101.0000    44.0000
+ 82 2015      9414   8354.410  ctx-rh-middletemporal             83.0686     8.2382    57.0000   104.0000    47.0000
+ 83 2016      1790   1619.083  ctx-rh-parahippocampal            80.7145     7.5280    55.0000   103.0000    48.0000
+ 84 2017      3785   3388.907  ctx-rh-paracentral                84.5487     9.7573    59.0000   108.0000    49.0000
+ 85 2018      3256   3025.343  ctx-rh-parsopercularis            81.6259     8.3341    60.0000   102.0000    42.0000
+ 86 2019      1699   1505.747  ctx-rh-parsorbitalis              80.9394     8.5513    58.0000   100.0000    42.0000
+ 87 2020      2882   2466.998  ctx-rh-parstriangularis           82.5638     8.8258    59.0000   101.0000    42.0000
+ 88 2021      2707   2303.378  ctx-rh-pericalcarine              84.4330     9.5668    60.0000   105.0000    45.0000
+ 89 2022      7095   5768.058  ctx-rh-postcentral                82.6272     9.6383    59.0000   109.0000    50.0000
+ 90 2023      2834   2696.234  ctx-rh-posteriorcingulate         81.2354     7.2655    60.0000    99.0000    39.0000
+ 91 2024     10210   8903.641  ctx-rh-precentral                 85.3993     9.8856    56.0000   110.0000    54.0000
+ 92 2025      7809   7253.879  ctx-rh-precuneus                  81.2907     8.2275    56.0000   101.0000    45.0000
+ 93 2026      2149   2076.960  ctx-rh-rostralanteriorcingulate    79.1773     7.0526    56.0000    98.0000    42.0000
+ 94 2027      8907   8074.421  ctx-rh-rostralmiddlefrontal       80.1123     8.1251    55.0000   100.0000    45.0000
+ 95 2028     21028  19400.710  ctx-rh-superiorfrontal            80.4609     8.9526    55.0000   108.0000    53.0000
+ 96 2029      8215   7327.207  ctx-rh-superiorparietal           80.5966     9.0011    56.0000   101.0000    45.0000
+ 97 2030     14050  12614.111  ctx-rh-superiortemporal           83.0770     8.5348    58.0000   104.0000    46.0000
+ 98 2031      8187   7370.020  ctx-rh-supramarginal              81.4236     8.9444    55.0000   104.0000    49.0000
+ 99 2034       810    711.540  ctx-rh-transversetemporal         84.4457     9.9607    58.0000   103.0000    45.0000
+100 2035      5501   5408.963  ctx-rh-insula                     79.8762     7.7481    54.0000    98.0000    44.0000
