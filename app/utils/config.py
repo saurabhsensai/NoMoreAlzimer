@@ -10,8 +10,8 @@ def load_config() -> Dict[str, Any]:
     
     # 2. Fallback to default config path
     if not config_path:
-        current_dir = "/home/saurabh/core_ai/Final Application/app/utils"
-        config_path = "/home/saurabh/core_ai/Final Application/config/settings.yaml"
+        current_dir = "/home/ubuntu/NoMoreAlzimer/app/utils"
+        config_path = "/home/ubuntu/NoMoreAlzimer/config/settings.yaml"
     
     # 3. Load and return configuration
     with open(config_path, 'r') as f:

@@ -10,7 +10,7 @@ class FastSurferService:
         self.license_path = Path(config['fastsurfer']['license_path'])
         
     def segment(self, input_path: Path, output_dir: Path) -> Generator[str, None, SegmentationResult]:
-        img_input_path = "/home/saurabh/core_ai/Final Application/" + os.path.dirname(input_path)
+        img_input_path = "/home/ubuntu/NoMoreAlzimer/" + os.path.dirname(input_path)
         actual_image = os.path.basename(input_path)
         
         print(img_input_path)
@@ -24,24 +24,23 @@ class FastSurferService:
         #     "--sd", str(output_dir),
         #     "--seg_only"
         # ]
-
+        print("Process Started")   
         cmd = [
     "docker", "run", "--rm",
-    "--gpus", "all",
     "--user", f"{subprocess.getoutput('id -u')}:{subprocess.getoutput('id -g')}",
     "-v", f"{img_input_path}:/data",  # Dynamically set input path
-    "-v", f"/home/saurabh/core_ai/Final Application/{output_dir}:/output",  # Dynamically set output path
-    "-v", "/home/saurabh/freesurfer_license:/fs_license",
+    "-v", f"/home/ubuntu/NoMoreAlzimer/{output_dir}:/output",  # Dynamically set output path
+    "-v", "/home/ubuntu/NoMoreAlzimer/config:/fs_license",
     "deepmi/fastsurfer",
     "--fs_license", "/fs_license/license.txt",
     "--t1", f"/data/{actual_image}",  # Dynamically set actual image name
     "--sid", "subjectX",
     "--sd", "/output",
     "--seg_only",
-    "--device", "cuda",
     "--no_cereb",
     "--no_hypothal",
-    "--threads", "20"
+    "--device", "cpu",
+    "--allow_root"
         ]
         
         try:
