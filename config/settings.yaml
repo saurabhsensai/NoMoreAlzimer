@@ -1,0 +1,19 @@
+app:
+  page_config:
+    page_title: "Brain Segmenter"
+    page_icon: "🧠"
+    layout: "wide"
+    initial_sidebar_state: "expanded"
+
+
+fastsurfer:
+  fs_home: "/path/to/FastSurfer"
+  license_path: "/home/saurabh/freesurfer_license/license.txt"
+
+paths:
+  temp_dir: "./temp"
+  output_dir: "./outputs"
+
+
+preprocessing:
+  voxel_size: 1.0
