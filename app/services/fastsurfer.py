@@ -10,7 +10,7 @@ class FastSurferService:
         self.license_path = Path(config['fastsurfer']['license_path'])
         
     def segment(self, input_path: Path, output_dir: Path) -> Generator[str, None, SegmentationResult]:
-        img_input_path = "/home/ubuntu/NoMoreAlzimer/" + os.path.dirname(input_path)
+        img_input_path = "/home/saurabhn/NoMoreAlzimer/" + os.path.dirname(input_path)
         actual_image = os.path.basename(input_path)
         
         print(img_input_path)
@@ -29,8 +29,8 @@ class FastSurferService:
     "docker", "run", "--rm",
     "--user", f"{subprocess.getoutput('id -u')}:{subprocess.getoutput('id -g')}",
     "-v", f"{img_input_path}:/data",  # Dynamically set input path
-    "-v", f"/home/ubuntu/NoMoreAlzimer/{output_dir}:/output",  # Dynamically set output path
-    "-v", "/home/ubuntu/NoMoreAlzimer/config:/fs_license",
+    "-v", f"/home/saurabhn/NoMoreAlzimer/{output_dir}:/output",  # Dynamically set output path
+    "-v", "/home/saurabhn/NoMoreAlzimer/config:/fs_license",
     "deepmi/fastsurfer",
     "--fs_license", "/fs_license/license.txt",
     "--t1", f"/data/{actual_image}",  # Dynamically set actual image name

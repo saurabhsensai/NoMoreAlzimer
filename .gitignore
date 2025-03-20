@@ -1,2 +1,5 @@
 application/
 venv/
+googlecloud/
+temp/
+temp/tplaavdi/preprocessed.nii

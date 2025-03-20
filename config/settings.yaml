@@ -8,7 +8,7 @@ app:
 
 fastsurfer:
   fs_home: "/path/to/FastSurfer"
-  license_path: "/home/saurabh/freesurfer_license/license.txt"
+  license_path: "/home/saurabhn/NoMoreAlzimer/config/license.txt"
 
 paths:
   temp_dir: "./temp"
