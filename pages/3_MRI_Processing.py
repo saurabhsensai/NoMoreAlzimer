@@ -15,6 +15,24 @@ import plotly.express as px
 import pandas as pd
 import base64
 
+def set_bg_hack(image_path):
+    try:
+        bg_img = f"""
+        .hero-section {{
+            background-image: url("https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+           
+        }}
+        """
+    except Exception:
+        bg_img = """
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        """
+    return bg_img
+
+hero_bg = set_bg_hack('images/mri.png')
+
 # Custom CSS with modern styling and hero background
 st.markdown(f"""
     <style>
@@ -40,7 +58,7 @@ st.markdown(f"""
         justify-content: center;
     }}
     
-
+    {hero_bg}
     .hero-overlay {{
         position: absolute;
         top: 0;
@@ -133,6 +151,8 @@ st.markdown(f"""
     }}
     </style>
 """, unsafe_allow_html=True)
+
+ 
 
 # Hero Section
 st.markdown("""
@@ -369,7 +389,7 @@ def get_slice(volume, orientation, slice_idx, rotation_angle=0):
         slice_data = volume[slice_idx, :, :]
     
     # Apply rotation
-    k = (rotation_angle // 90) % 4  # Convert to number of 90-degree rotations
+    k = (rotation_angle // 90) % 4  
     if k > 0:
         slice_data = np.rot90(slice_data, k=k)
     
