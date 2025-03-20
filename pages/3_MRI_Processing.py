@@ -318,6 +318,8 @@ if 'use_example' not in st.session_state:
     st.session_state.use_example = False
 if 'selected_subject' not in st.session_state:
     st.session_state.selected_subject = None
+if 'rotation_angle' not in st.session_state:
+    st.session_state.rotation_angle = 0  # 0 degrees (no rotation)
 
 def load_example_data(subject_id):
     """Load example data for the selected subject"""
@@ -357,18 +359,25 @@ def load_example_data(subject_id):
 
 
 
-def get_slice(volume, orientation, slice_idx):
-    """Extract a slice from the volume based on orientation"""
+def get_slice(volume, orientation, slice_idx, rotation_angle=0):
+    """Extract a slice from the volume based on orientation and apply rotation"""
     if orientation == "axial":
-        return volume[..., slice_idx]
+        slice_data = volume[..., slice_idx]
     elif orientation == "coronal":
-        return volume[:, slice_idx, :]
+        slice_data = volume[:, slice_idx, :]
     elif orientation == "sagittal":
-        return volume[slice_idx, :, :]
+        slice_data = volume[slice_idx, :, :]
+    
+    # Apply rotation
+    k = (rotation_angle // 90) % 4  # Convert to number of 90-degree rotations
+    if k > 0:
+        slice_data = np.rot90(slice_data, k=k)
+    
+    return slice_data
     
 
-def create_slice_visualization(orig_img_path, seg_img_path, orientation="axial", slice_idx=None):
-    """Create a visualization of the original MRI and segmentation for a given slice"""
+def create_slice_visualization(orig_img_path, seg_img_path, orientation="axial", slice_idx=None, rotation_angle=0):
+    """Create a visualization of the original MRI and segmentation for a given slice with rotation"""
     try:
         # Load the MRI and segmentation data
         orig_img = nib.load(orig_img_path)
@@ -393,9 +402,9 @@ def create_slice_visualization(orig_img_path, seg_img_path, orientation="axial",
         # Ensure slice_idx is within bounds
         slice_idx = max(0, min(slice_idx, max_slice))
         
-        # Get the slices for both original and segmentation data
-        orig_slice = get_slice(orig_data, orientation, slice_idx)
-        seg_slice = get_slice(seg_data, orientation, slice_idx)
+        # Get the slices for both original and segmentation data with rotation
+        orig_slice = get_slice(orig_data, orientation, slice_idx, rotation_angle)
+        seg_slice = get_slice(seg_data, orientation, slice_idx, rotation_angle)
         
         # Normalize the original image for display
         orig_slice_norm = (orig_slice - orig_slice.min()) / (orig_slice.max() - orig_slice.min())
@@ -420,7 +429,7 @@ def create_slice_visualization(orig_img_path, seg_img_path, orientation="axial",
         ax3.axis("off")
         
         # Set the figure title
-        fig.suptitle(f"{orientation.capitalize()} View - Slice {slice_idx}/{max_slice}", fontsize=16)
+        fig.suptitle(f"{orientation.capitalize()} View - Slice {slice_idx}/{max_slice} (Rotation: {rotation_angle}°)", fontsize=16)
         
         # Adjust layout
         plt.tight_layout()
@@ -797,7 +806,7 @@ if st.session_state.mri_data is not None and st.session_state.processing['result
     st.markdown("---")
     st.header("2D Slice Viewer")
     
-    col1, col2 = st.columns([1, 5])
+    col1, col2, col3 = st.columns([1, 4, 1]) 
     
     with col1:
         orientation = st.selectbox(
@@ -806,6 +815,13 @@ if st.session_state.mri_data is not None and st.session_state.processing['result
             key="slice_orientation"
         )
     
+    with col3:
+        # Add the rotation button
+        if st.button("Rotate 90° CW", key="rotate_button"):
+            # Increment rotation angle by 90 degrees on each click
+            st.session_state.rotation_angle = (st.session_state.rotation_angle + 90) % 360
+
+    st.caption(f"Current rotation: {st.session_state.rotation_angle}°")        
     # Initialize slice index in session state if not exists
     if 'slice_idx' not in st.session_state:
         st.session_state.slice_idx = None
@@ -819,7 +835,8 @@ if st.session_state.mri_data is not None and st.session_state.processing['result
         orig_img_path, 
         seg_img_path, 
         orientation=orientation,
-        slice_idx=st.session_state.slice_idx
+        slice_idx=st.session_state.slice_idx,
+        rotation_angle=st.session_state.rotation_angle  # Pass the rotation angle
     )
     
     with col2:
@@ -838,18 +855,21 @@ if st.session_state.mri_data is not None and st.session_state.processing['result
     
     # If orientation or slice changed, update the visualization
     if orientation != st.session_state.get('last_orientation', '') or \
-       slice_idx != st.session_state.get('last_slice_idx', -1):
+       slice_idx != st.session_state.get('last_slice_idx', -1) or \
+       st.session_state.rotation_angle != st.session_state.get('last_rotation_angle', 0):
         
         viz_buf, _ = create_slice_visualization(
             orig_img_path, 
             seg_img_path, 
             orientation=orientation,
-            slice_idx=slice_idx
+            slice_idx=slice_idx,
+            rotation_angle=st.session_state.rotation_angle  # Pass the rotation angle
         )
         
         # Update last values
         st.session_state.last_orientation = orientation
         st.session_state.last_slice_idx = slice_idx
+        st.session_state.last_rotation_angle = st.session_state.rotation_angle
     
     # Display the visualization
     if viz_buf:
@@ -857,7 +877,6 @@ if st.session_state.mri_data is not None and st.session_state.processing['result
     else:
         st.error("Failed to generate slice visualization")
 
-# ... (existing visualization and segmentation code)
 
 
 # --- UI Styling ---
