@@ -4,14 +4,14 @@ import nibabel as nib
 import pandas as pd
 
 # Define important features to display
-IMPORTANT_FEATURES = [
+IMPORTANT_FEATURES = ["original_shape_VoxelVolume", 
     "original_firstorder_Mean", "original_firstorder_Median",
     "original_glcm_Contrast", "original_glcm_Correlation",
     "original_gldm_DependenceEntropy", "original_glszm_GrayLevelVariance",
-    "original_ngtdm_Coarseness", "original_shape_Elongation"
+    "original_ngtdm_Coarseness", "original_shape_Elongation", "original_shape_SurfaceArea", "original_shape_Sphericity"
 ]
 
-def extract_features(mri_path, mask_path, label):
+def extract_features(mri_path, mask_path, label):   
     """
     Extracts and filters important radiomic features.
 
