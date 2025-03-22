@@ -14,6 +14,78 @@ from app.services.feature_extraction import extract_features
 import plotly.express as px
 import pandas as pd
 import base64
+import streamlit.components.v1 as components
+
+
+
+
+
+normative_data = {
+    'Hippocampus': {
+        'Male': {'50-60': {'mean': 4.0, 'sd': 0.5}, '60-70': {'mean': 3.8, 'sd': 0.5}, '70-80': {'mean': 3.6, 'sd': 0.5}, '80-90': {'mean': 3.4, 'sd': 0.5}},
+        'Female': {'50-60': {'mean': 3.9, 'sd': 0.5}, '60-70': {'mean': 3.7, 'sd': 0.5}, '70-80': {'mean': 3.5, 'sd': 0.5}, '80-90': {'mean': 3.3, 'sd': 0.5}}
+    },
+    'entorhinal': {
+        'Male': {'50-60': {'mean': 0.8, 'sd': 0.1}, '60-70': {'mean': 0.75, 'sd': 0.1}, '70-80': {'mean': 0.7, 'sd': 0.1}, '80-90': {'mean': 0.65, 'sd': 0.1}},
+        'Female': {'50-60': {'mean': 0.75, 'sd': 0.1}, '60-70': {'mean': 0.7, 'sd': 0.1}, '70-80': {'mean': 0.65, 'sd': 0.1}, '80-90': {'mean': 0.6, 'sd': 0.1}}
+    },
+    'Amygdala': {
+        'Male': {'50-60': {'mean': 2.0, 'sd': 0.3}, '60-70': {'mean': 1.9, 'sd': 0.3}, '70-80': {'mean': 1.8, 'sd': 0.3}, '80-90': {'mean': 1.7, 'sd': 0.3}},
+        'Female': {'50-60': {'mean': 1.9, 'sd': 0.3}, '60-70': {'mean': 1.8, 'sd': 0.3}, '70-80': {'mean': 1.7, 'sd': 0.3}, '80-90': {'mean': 1.6, 'sd': 0.3}}
+    },
+    'fusiform': {
+        'Male': {'50-60': {'mean': 7.5, 'sd': 1.0}, '60-70': {'mean': 7.0, 'sd': 1.0}, '70-80': {'mean': 6.5, 'sd': 1.0}, '80-90': {'mean': 6.0, 'sd': 1.0}},
+        'Female': {'50-60': {'mean': 7.0, 'sd': 1.0}, '60-70': {'mean': 6.5, 'sd': 1.0}, '70-80': {'mean': 6.0, 'sd': 1.0}, '80-90': {'mean': 5.5, 'sd': 1.0}}
+    },
+    'Precuneus': {
+        'Male': {'50-60': {'mean': 12.5, 'sd': 1.5}, '60-70': {'mean': 12.0, 'sd': 1.5}, '70-80': {'mean': 11.5, 'sd': 1.5}, '80-90': {'mean': 11.0, 'sd': 1.5}},
+        'Female': {'50-60': {'mean': 12.0, 'sd': 1.5}, '60-70': {'mean': 11.5, 'sd': 1.5}, '70-80': {'mean': 11.0, 'sd': 1.5}, '80-90': {'mean': 10.5, 'sd': 1.5}}
+    }
+}
+
+
+def get_volume_status(region, volume, age, sex, hemisphere):
+    """Compare user volume to normative data, adjusting for hemisphere"""
+    age_group = f"{(age // 10) * 10}-{(age // 10) * 10 + 10}"
+    if region in normative_data and sex in normative_data[region] and age_group in normative_data[region][sex]:
+        mean_per_side = normative_data[region][sex][age_group]['mean']
+        sd_per_side = normative_data[region][sex][age_group]['sd']
+        
+        # Adjust normative mean based on hemisphere
+        if hemisphere == 'both':
+            mean = mean_per_side * 2  # Sum of both hemispheres
+            sd = sd_per_side * (2 ** 0.5)  # Approximate combined SD (assuming independence)
+        else:
+            mean = mean_per_side  # Single hemisphere
+            sd = sd_per_side
+        
+        z_score = (volume - mean) / sd
+        if z_score < -1.96:  # Below 5th percentile
+            return "Abnormal (Possible Shrinkage)", z_score
+        elif z_score < -1:  # Between 5th and 15th percentile
+            return "Mildly Abnormal", z_score
+        else:
+            return "Normal", z_score
+    return "Data Unavailable", None
+
+
+def set_bg_hack(image_path):
+    try:
+        bg_img = f"""
+        .hero-section {{
+            background-image: url("https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+           
+        }}
+        """
+    except Exception:
+        bg_img = """
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        """
+    return bg_img
+
+hero_bg = set_bg_hack('images/mri.png')
 
 # Custom CSS with modern styling and hero background
 st.markdown(f"""
@@ -40,7 +112,7 @@ st.markdown(f"""
         justify-content: center;
     }}
     
-
+    {hero_bg}
     .hero-overlay {{
         position: absolute;
         top: 0;
@@ -132,6 +204,45 @@ st.markdown(f"""
         margin: 0;
     }}
     </style>
+""", unsafe_allow_html=True)
+
+ # Add this to your existing st.markdown CSS block at the top of the file
+# or replace the existing .stat-card styling
+st.markdown("""
+<style>
+    /* ... [Keep your existing CSS] ... */
+
+    /* Updated Statistics Cards Styling */
+    .stat-card {
+        background: white;
+        padding: 0.5rem; /* Reduced from 1.5rem */
+        border-radius: 8px; /* Slightly smaller from 10px */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+        margin: 0.3rem 0; /* Reduced from 0.5rem */
+        min-height: auto; /* Ensure it doesn't force a larger height */
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card h3 {
+        color: #64748b;
+        font-size: 0.9rem; /* Reduced from 1rem */
+        margin-bottom: -0.9rem; /* Reduced from 0.5rem */
+        line-height: 1;
+    }
+
+    .stat-card h2 {
+        font-size: 1.2rem; /* Reduced from 2rem */
+        font-weight: 600;
+        margin: 0;
+        line-height: 1;
+    }
+
+</style>
 """, unsafe_allow_html=True)
 
 # Hero Section
@@ -369,7 +480,7 @@ def get_slice(volume, orientation, slice_idx, rotation_angle=0):
         slice_data = volume[slice_idx, :, :]
     
     # Apply rotation
-    k = (rotation_angle // 90) % 4  # Convert to number of 90-degree rotations
+    k = (rotation_angle // 90) % 4  
     if k > 0:
         slice_data = np.rot90(slice_data, k=k)
     
@@ -656,6 +767,10 @@ with st.sidebar:
     st.header("Processing Controls")
     use_example = st.checkbox("Use Example Data", value=st.session_state.use_example)
     st.session_state.use_example = use_example
+
+    st.header("User Information")
+    user_age = st.slider("Age", 50, 90, 60, key="user_age")
+    user_sex = st.selectbox("Sex", ["Male", "Female"], key="user_sex")
     
     if use_example:
         # Get list of available subjects from demo directory
@@ -769,10 +884,10 @@ with st.sidebar:
 
 # --- Main Visualization Area ---
 if st.session_state.mri_data is not None:
-    col1, col2 = st.columns([1, 5])
+    col1, col2, col3 = st.columns([1, 4, 2])
     
     with col1:
-        st.header("Selected Regions")
+        # st.header("Selected Regions")
         st.write(f"Loaded data shape: {st.session_state.mri_data.shape}")
         st.write(f"Selected regions: {', '.join(selected_regions)}")
     
@@ -782,25 +897,138 @@ if st.session_state.mri_data is not None:
             st.session_state.mri_data,
             selected_region_info,
             hemisphere=hemisphere,
-            show_mesh=st.session_state.show_mesh,  # Use the value from session state
+            show_mesh=st.session_state.show_mesh,
             opacity=opacity
         )
         st.plotly_chart(fig, use_container_width=True, height=800)
-else:
-    st.markdown("""
-    <div style="
-        height: 500px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        background-color: #f5f5f5;
-        border-radius: 10px;
-    ">
-        <h2 style="color: #666;">No Data Loaded</h2>
-        <p style="color: #888;">Upload and process an MRI scan to begin</p>
-    </div>
-    """, unsafe_allow_html=True)
+        st.markdown("""
+                    <div style="margin-top: 1rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px;">
+                        <h4>What Does the Z-Score Mean?</h4>
+                        <p style="font-size: 0.9rem; color: #333;">
+                            The Z-score shows how your brain region's volume compares to a healthy population of the same age and sex. It’s calculated as:
+                            <br><strong>Z = (Your Volume - Average Volume) / Standard Deviation</strong>
+                            <br>- A Z-score near 0 means your volume is close to the average.
+                            <br>- A positive Z-score (e.g., +1) means your volume is larger than average.
+                            <br>- A negative Z-score (e.g., -1) means your volume is smaller than average.
+                            <br><strong>Normal:</strong> Z-score above -1 (within typical range).
+                            <br><strong>Mildly Abnormal:</strong> Z-score between -1 and -1.96 (slightly below average).
+                            <br><strong>Abnormal (Possible Shrinkage):</strong> Z-score below -1.96 (smaller than 95% of healthy people, may indicate atrophy).
+                            <br>The normal range depends on age and sex, as brain volumes naturally decrease with age.
+                        </p>
+                    </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown(
+            """
+            <div style="
+                background-color:#f4f4f4;
+                padding: 12px;
+                border-radius: 10px;
+                border-left: 5px solid #66ff66;
+                text-align: center;
+                font-size: 18px;
+                font-weight: bold;
+            ">
+                🔗 <a href="https://docs.google.com/document/d/e/2PACX-1vSLu3zTLDoHUUBm9cDlWmsS0CsB4fifIEvsPCGUuee9VL9R6kVRkXaBN3RStS0MGHxX3p4BO6erbXcz/pub" target="_blank" style="
+                    color: #0073e6;
+                    text-decoration: none;
+                ">Reference Document</a>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )      
+    with col3:
+        st.markdown("""
+            <div class="card">
+                <div class="card-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Region Analysis
+                </div>
+        """, unsafe_allow_html=True)
+        
+        region_options = [f"{region} ({hemisphere})" for region in selected_regions]
+        if not region_options:
+            st.write("No regions selected")
+        else:
+            selected_region_display = st.selectbox(
+                "Select Region to Analyze",
+                options=region_options,
+                key="region_analysis_select"
+            )
+            
+            region_name = selected_region_display.split(" (")[0]
+            region_hemi = selected_region_display.split(" (")[1][:-1]
+            
+            labels_dict = initialize_labels()
+            if region_name in labels_dict:
+                if region_hemi == 'both':
+                    label_values = [labels_dict[region_name]['left'], labels_dict[region_name]['right']]
+                else:
+                    label_values = [labels_dict[region_name][region_hemi]]
+                
+                if 'region_features' not in st.session_state:
+                    st.session_state.region_features = {}
+                
+                if selected_region_display not in st.session_state.region_features:
+                    with st.spinner("Calculating features..."):
+                        feature_dict = {
+                            "Volume": 0.0,
+                            "SurfaceArea": 0.0,
+                            "Sphericity": 0.0
+                        }
+                        mri_path = st.session_state.processing["result"].orig_nu_path
+                        mask_path = st.session_state.processing["result"].aseg_path
+                        
+                        for label_value in label_values:
+                            features = extract_features(mri_path, mask_path, label_value)
+                            if features:
+                                feature_dict["Volume"] += float(features.get("original_shape_VoxelVolume", 0.0)) / 1000  # Convert mm³ to cm³
+                                feature_dict["SurfaceArea"] += float(features.get("original_shape_SurfaceArea", 0.0))
+                                feature_dict["Sphericity"] += float(features.get("original_shape_Sphericity", 0.0))
+                        
+                        if region_hemi == 'both':
+                            feature_dict["Sphericity"] /= len(label_values) if label_values else 1
+                        
+                        st.session_state.region_features[selected_region_display] = feature_dict
+                
+                features = st.session_state.region_features.get(selected_region_display, {
+                    "Volume": 0.0,
+                    "SurfaceArea": 0.0,
+                    "Sphericity": 0.0
+                })
+                
+                # Check volume status for key Alzheimer's regions
+                volume_status, z_score = "Data Unavailable", None
+                if region_name in normative_data:
+                    volume_status, z_score = get_volume_status(region_name, features["Volume"], user_age, user_sex, region_hemi)
+                
+                # Display features with status
+                hemi_label = f" ({region_hemi.capitalize()})" if region_hemi != 'both' else " (Both Hemispheres)"
+                st.markdown(f"""
+                    <div class="stat-card">
+                        <h3>Volume{hemi_label}</h3>
+                        <h2>{features["Volume"]:.2f} cm³</h2>
+                        <p style="color: {'red' if 'Abnormal' in volume_status else 'green'}">
+                            {volume_status} {f'(Z-score: {z_score:.2f})' if z_score is not None else ''}
+                        </p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Surface Area</h3>
+                        <h2>{features["SurfaceArea"]:.2f} mm²</h2>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Sphericity</h3>
+                        <h2>{features["Sphericity"]:.3f}</h2>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                st.caption("Note: Volume in cm³ (converted from mm³), Surface Area in mm², Sphericity is unitless (0-1). Status based on normative data.")
+                st.caption("Disclaimer: This is not a diagnostic tool; consult a medical professional.")
+              
+            else:
+                st.error(f"Region {region_name} not found in labels dictionary")
+        
+        st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.mri_data is not None and st.session_state.processing['result'] is not None:
     st.markdown("---")
