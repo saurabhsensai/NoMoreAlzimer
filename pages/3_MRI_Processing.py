@@ -1236,3 +1236,47 @@ if "processing" in st.session_state and st.session_state.processing.get("result"
                     st.error("❌ No features were extracted successfully.")
 else:
     st.warning("⚠️ MRI and Mask paths are not available. Please process an MRI scan first.")
+
+# --- Download Section ---
+st.markdown("---")
+st.header("📥 Download Results")
+
+if st.session_state.processing.get("result"):
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Export Original MRI and Segmentation**")
+        st.caption("Download the original MRI volume and segmentation mask used for analysis (ZIP format)")
+    
+    with col2:
+        def create_zip(orig_path, seg_path):
+            from io import BytesIO
+            import zipfile
+            
+            zip_buffer = BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                # Add original MRI
+                zip_file.write(orig_path, arcname="original_mri.mgz")
+                # Add segmentation mask
+                zip_file.write(seg_path, arcname="segmentation_mask.mgz")
+            
+            zip_buffer.seek(0)
+            return zip_buffer.getvalue()
+
+        try:
+            orig_path = st.session_state.processing['result'].orig_nu_path
+            seg_path = st.session_state.processing['result'].aseg_path
+            
+            zip_bytes = create_zip(orig_path, seg_path)
+            
+            st.download_button(
+                label="Download Volumes (ZIP)",
+                data=zip_bytes,
+                file_name="brain_volumes.zip",
+                mime="application/zip",
+                help="Contains original MRI and segmentation mask in MGZ format"
+            )
+        except Exception as e:
+            st.error(f"Error creating zip file: {str(e)}")
+else:
+    st.warning("Process an MRI scan or load example data to enable downloads")
